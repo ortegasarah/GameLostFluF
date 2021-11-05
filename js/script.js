@@ -2,9 +2,9 @@ window.onload = function () {
 
   //llamar mis clases
   const bg = new Background(canvas.width, canvas.height)
-  const player = new Player(100, 286, 50, 50)
+  const player = new Player(150, 286, 70, 70)
   const platform = new Platform(canvas.width, 300)
-
+const fox = new FoxEnemy(400, 286, 50, 50)
   
 
 
@@ -34,6 +34,7 @@ window.onload = function () {
     bg.draw()
     player.draw()
     platform.draw()
+    fox.draw()
     //player.draw()
     if (requestId) {
       requestId = requestAnimationFrame(update)
@@ -48,23 +49,26 @@ window.onload = function () {
       // player.userPull = 0.3;
       bg.x -= 15;
       platform.x -= 20;
-      player.y -= 15;
+      fox.y-= 20
+      player.y -= 20;
     }
     if (e.keyCode === 82) {
       //resetGame()
-      player.x -= 20;
+      //player.x -= 20;
     } //right
     if (e.keyCode === 39) {
-      player.x += 10;
+      //player.x += 10;
       bg.x -= 30;
       platform.x -= 20;
+      fox.x-= 20;
 
     } //left
     if (e.keyCode === 37) {
       //player.userPull = 0;
-      player.x -= 20;
+      //player.x -= 20;
       bg.x += 15;
       platform.x += 20;
+      fox.x+= 20
 
     }
   })

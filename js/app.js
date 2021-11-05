@@ -28,8 +28,6 @@ class Background {
   }
 }
 
-
-
 class Player {
   //Metodos y propiedades
   //Metodos son las funciones a realizar
@@ -37,7 +35,7 @@ class Player {
   constructor(x, y, w, h) {
     //position
     this.x = x;
-    this.y = 450;
+    this.y = 440;
     this.width = w;
     this.height = h;
     //images
@@ -86,38 +84,6 @@ class Player {
       this.y + this.height > item.y
     )
   }
-
-  update(game) {
-    if (game.keyboard.includes("ArrowLeft")) {
-      if (this.x <= 0) {
-        this.x = 0;
-      } else {
-        this.x -= this.xv;
-      }
-    }
-    if (game.keyboard.includes("ArrowRight")) {
-      if (this.x + this.w >= game.canvas.width) {
-        this.x = game.canvas.width - this.w;
-      } else {
-        this.x += this.xv;
-      }
-    }
-    if (game.keyboard.includes("Space")) {
-      if (!this.jumping) {
-        this.jumping = true;
-        this.jumpTimer = 0;
-      }
-    }
-
-    // 投げ上げの公式（※ｙ軸方向に反転）
-    this.y = (0.5 * this.gravity * this.jumpTimer * this.jumpTimer - this.yv * this.jumpTimer) + (game.canvas.height - this.h);
-    this.jumpTimer++;
-
-    if (this.y > game.canvas.height - this.h) {
-      this.y = game.canvas.height - this.h;
-      this.jumping = false
-    }
-  }
 }
 
 class Platform {
@@ -143,6 +109,52 @@ class Platform {
   }
 }
 
-class FoxEnemy {}
+class FoxEnemy {
+  //Metodos y propiedades
+  //Metodos son las funciones a realizar
+  //propiedades sus atributos o caracteristicas
+  constructor(x, y, w, h) {
+    //position
+    this.x = x;
+    this.y = 450;
+    this.width = w;
+    this.height = h;
+    //images
+    this.images1 = new Image();
+    this.images1.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/sprites/robot/run00.png"
+
+    this.images2 = new Image();
+    this.images2.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/sprites/robot/run01.png"
+
+    this.image = this.images1;
+    this.gravity = 0.4;
+
+    this.gravity = 0.4;
+    this.jumping = false;
+    this.jumpTimer = 0;
+    this.velX = 0;
+    this.velY = 0;
+  }
+  //   metodos
+
+  draw() {
+
+    if (frames % 10 === 0) {
+      //if ternario  (condicion) "?" (result true) ":"  (reult false)
+      this.image = this.image === this.images1 ? this.images2 : this.images1;
+    
+
+
+    }
+
+    //(img,x,y,w,h)
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
+  }
+  
+
+  
+}
+
 
 class MarmotEnemy {}
+
