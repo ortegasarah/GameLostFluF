@@ -3,15 +3,14 @@ class Background {
   constructor(w, h) {
     this.x = 0;
     this.y = 0;
-    this.width = 2000;
-    this.height = h;
+    this.width = 3000;
+    this.height = canvas.height;
     this.image = new Image();
     this.image.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/environments/defaultBackground.png"
   }
 
-  //metodos
   draw() {
-    //dibujar la imagen
+    ctx.drawImage(this.image, this.x - this.width, this.y, this.width, this.height)
     ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
     ctx.drawImage(
       this.image,
@@ -22,21 +21,36 @@ class Background {
     )
   }
 
-  /*gameOver() {
-    ctx.drawImage(this.imgGameOver, 300, 140, 400, 400)
+  gameOver() {
+    ctx.fillStyle = "#000";
+    ctx.font = "28px 'Press Start 2P'"
+    ctx.fillText('Game Over! Try again!', 120, 550);
 
-  }*/
+    ctx.fillStyle = 'black';
+    ctx.fillRect(this.x, 500, this.width, 250);
+
+    ctx.fillStyle = "#000";
+    ctx.font = "28px 'Press Start 2P'"
+    ctx.fillText('Your final score', 100, 610);
+
+    console.log(`${points}`)
+    ctx.fillText(`${points}`, 230, 680);
+    //create function score
+  }
 }
-
+/*
 class Player {
-
   constructor(x, y, w, h) {
     this.x = x;
     this.y = y;
     this.width = w;
     this.height = h;
-    this.vy = 2 //gravity
-    this.userPull = 0; //gravity
+    this.vy = 10 //gravity
+    this.vx = 5 //gravity
+    this.jump = false;
+    this.direction = "down"
+    //this.userPull = 0; //gravity
+    this.life = playerLife;
     this.images1 = new Image();
     this.images1.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/sprites/puppy/run00.png"
     this.images2 = new Image();
@@ -47,13 +61,7 @@ class Player {
     if (frames % 10 === 0) {
       this.image = this.image === this.images1 ? this.images2 : this.images1;
     }
-    //validar gravedad
-    this.vy = this.vy + (gravity - this.userPull);
-    if (this.y <= 0) {
-      this.userPull = 0;
-      this.y = 2;
-      this.vy = 2;
-    }
+    this.y += this.vy;
     ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
   }
 
@@ -66,126 +74,259 @@ class Player {
     )
   }
 }
+*/
+class Sprite {
+  constructor(options) {
+    this.context = options.context;
+    this.image = new Image(); // Path to image sprite sheet
+    this.image.src = options.image;
+
+    this.x = options.x; // Coordinates on canvas
+    this.y = options.y;
+    this.width = options.width; // Size of sprite frame
+    this.height = options.height;
+    this.frames = options.frames; // Number of frames in a row
+    this.frameIndex = options.frameIndex; // Current frame
+    this.row = options.row; // Row of sprites
+    this.ticksPerFrame = options.ticksPerFrame; // Speed of animation
+    this.tickCount = options.tickCount; // How much time has passed
+    this.vy = 10 //gravity
+    this.vx = 5 //gravity
+    this.jumping = false;
+    this.direction = "down"
+  }
+
+  update() {
+    this.tickCount += 1;
+    if (this.tickCount > this.ticksPerFrame) {
+      this.tickCount = 0;
+      if (this.frameIndex < this.frames - 1) {
+        this.frameIndex += 1;
+      } else {
+        this.frameIndex = 0;
+      }
+    }
+  }
+
+  render() {
+    this.context.drawImage(
+      this.image,
+      this.frameIndex * this.width, // The x-axis coordinate of the top left corner
+      this.row * this.height, // The y-axis coordinate of the top left corner
+      this.width, // The width of the sub-rectangle
+      this.height, // The height of the sub-rectangle
+      this.x, // The x coordinate
+      this.y, // The y coordinate
+      this.width, // The width to draw the image
+      this.height // The width to draw the image
+    );
+  }
+}
+
+class Player extends Sprite {
+
+  //static src = './images/sheep_sprites.png';
+
+  constructor(x, y, context, image) {
+    super({
+      context: context,
+      image: image,
+      x: x,
+      y: y,
+
+      width: 85,
+      height: 70,
+
+      frameIndex: 0,
+      row: 1,
+      tickCount: 0,
+      ticksPerFrame: 4,
+      frames: 7
+    });
+
+
+  }
+
+  right() {
+    this.frames = 7;
+    this.frameIndex = 0;
+    this.row = 1;
+    this.ticksPerFrame = 8;
+  }
+
+  left() {
+    this.frames = 7;
+    this.frameIndex = 0;
+    this.row = 0;
+    this.ticksPerFrame = 8;
+  }
+
+
+  jump() {
+    this.frames = 7;
+    this.frameIndex = 0;
+    this.row = 1;
+    this.ticksPerFrame = 8;
+  }
+
+  collision(item) {
+    return (
+      this.x < item.x + item.width &&
+      this.x + this.width > item.x &&
+      this.y < item.y + item.height &&
+      this.y + this.height > item.y
+    )
+  }
+
+  render() { // para que se quede en el top de la plataforma 
+    if (this.y + this.height < 400) {
+      this.y += this.vy
+    }
+    ctx.drawImage(
+      this.image,
+      this.frameIndex * this.width, // The x-axis coordinate of the top left corner
+      this.row * this.height, // The y-axis coordinate of the top left corner
+      this.width, // The width of the sub-rectangle
+      this.height, // The height of the sub-rectangle
+      this.x, // The x coordinate
+      this.y, // The y coordinate
+      this.width, // The width to draw the image
+      this.height // The width to draw the image
+    );
+  }
+}
 
 
 class Platform {
-  constructor(w, h) {
-    this.x = 0;
-    this.y = 500;
-    this.width = 2000;
-    this.height = h;
-    this.image = new Image();
-    this.image.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/environments/defaultPlatform.png";
-
-  }
-  draw() {
-    //dibujar la imagen
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
-    ctx.drawImage(
-      this.image,
-      this.x + this.width,
-      this.y,
-      this.width,
-      this.height
-    )
-  }
-}
-
-
-
-
-class FlyingPlatform {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-    this.width = 85;
-    this.height = 15;
-    this.image = new Image();
-    this.image.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/environments/defaultPlatform.png";
-
-  }
-  draw() {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
-    ctx.drawImage(
-      this.image,
-      this.x + this.width,
-      this.y,
-      this.width,
-      this.height
-    )
-  }
-}
-
-class MarmotEnemy {
-  //Metodos y propiedades
-  //Metodos son las funciones a realizar
-  //propiedades sus atributos o caracteristicas
   constructor(x, y, w, h) {
-    //position
     this.x = x;
     this.y = y;
     this.width = w;
     this.height = h;
-    //images
-    this.images1 = new Image();
-    this.images1.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/sprites/robot/run00.png"
-
-    this.images2 = new Image();
-    this.images2.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/sprites/robot/run01.png"
-
-    this.image = this.images1;
+    this.image = new Image();
+    this.image.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/environments/defaultPlatform.png";
   }
-  //   metodos
+  draw() {
+    //dibujar la imagen
+    ctx.drawImage(this.image, this.x - this.width, this.y, this.width, this.height)
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
+    ctx.drawImage(
+      this.image,
+      this.x + this.width,
+      this.y,
+      this.width,
+      this.height
+    )
+  }
+}
+
+
+class FlyingPlatform {
+  constructor(x, y, w, h) {
+    this.x = x;
+    this.y = y;
+    this.width = w;
+    this.height = h;
+    this.image = new Image();
+    this.image.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/environments/defaultPlatform.png";
+  }
 
   draw() {
-
-    if (frames % 10 === 0) {
-      //if ternario  (condicion) "?" (result true) ":"  (reult false)
-      this.image = this.image === this.images1 ? this.images2 : this.images1;
-
-    }
-
-    //(img,x,y,w,h)
     ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
+    ctx.drawImage(
+      this.image,
+      this.x + this.width,
+      this.y,
+      this.width,
+      this.height
+    )
   }
 
-
+  collision(item) {
+    return (
+      this.x < item.x + item.width &&
+      this.x + this.width > item.x &&
+      this.y < item.y + item.height &&
+      this.y + this.height > item.y &&
+      item.direction === "down"
+    )
+  }
 
 }
 
-class SpriteSheet {
-  constructor(image, w = 16, h = 16) {
-      this.image = image;
-      this.width = w;
-      this.height = h;
-      this.tiles = new Map();
+
+class EnemyWolf extends Sprite {
+  constructor(x, y, context, image) {
+    super({
+      context: context,
+      image: image,
+      x: x,
+      y: y,
+      width: 125,
+      height: 95,
+      frameIndex: 0,
+      row: 0,
+      tickCount: 0,
+      ticksPerFrame: 9,
+      frames: 3
+    });
   }
 
-  define(name, x, y) {
-      const buffer = document.createElement('canvas');
-      buffer.height = this.height;
-      buffer.width = this.width;
-      buffer
-          .getContext('2d')
-          .drawImage(
-              this.image,
-              this.width * x,
-              this.height * y,
-              this.width,
-              this.height,
-              0,
-              0,
-              this.width,
-              this.height);
-      this.tiles.set(name, buffer);
+  right() {
+    this.frameIndex = 0;
+    this.row = 0;
   }
 
-  draw(name, ctx, x, y) {
-      const buffer = this.tiles.get(name);
-      ctx.drawImage(buffer, x, y);
+  left() {
+    this.frameIndex = 0;
+    this.row = 1;
+  }
+}
+
+
+class Flower extends Sprite {
+  constructor(x, y, context, image) {
+    super({
+      context: context,
+      image: image,
+      x: x,
+      y: y,
+      width: 53,
+      height: 130,
+      frameIndex: 0,
+      row: 0,
+      tickCount: 0,
+      ticksPerFrame: 9,
+      frames: 3
+    });
   }
 
-  drawTile(name, ctx, x, y) {
-      this.draw(name, ctx, x * this.width, y * this.height);
+  flor() {
+    this.frameIndex = 0;
+    this.row = 0;
+  }
+
+}
+
+class Water {
+  constructor(x, y, w, h) {
+    this.x = x;
+    this.y = y;
+    this.width = w;
+    this.height = h;
+    this.image = new Image();
+    this.image.src = "./images/water.png"
+  }
+
+  draw() {
+    ctx.drawImage(this.image, this.x - this.width, this.y, this.width, this.height)
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
+    ctx.drawImage(
+      this.image,
+      this.x + this.width,
+      this.y,
+      this.width,
+      this.height
+    )
   }
 }

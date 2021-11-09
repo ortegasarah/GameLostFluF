@@ -1,31 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-
 }
 
-html {
+html{
   height: 100%;
   width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
+#canvas {
+  border: blueviolet 5px solid;
+  padding: 0;
+  margin: auto;
+  display: block;
+  z-index: -10;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
 
 body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   align-content: space-around;
   background-color: white;
   color: #FBF5F3;
   justify-content: left;
+  background-color: #f9f4e8;
+  /*
+  background-size: 1300px auto;
+  background-image: url("../images/gameboy-bg.png");
+  background-repeat: no-repeat;
+  background-color: rgb(212, 184, 189);
+  background-position: center;
+  z-index: 1000;*/
+
+
+}
+
+.bggg {
+  z-index: 1000;
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+
+}
+
+div {
+  position: relative;
+  text-align: center;
+}
+
+h1 {
+  font-family: 'Press Start 2P', monospace;
+  color: black;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 35px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 #start-button {
-  background-color: white;
+  -moz-transition: all .2s ease-in;
+  -o-transition: all .2s ease-in;
+  -webkit-transition: all .2s ease-in;
+  transition: all .2s ease-in;
+  background-color: rgba(255, 255, 255, 0);
+  font-family: 'Press Start 2P', monospace;
   border: none;
   color: black;
   padding: 15px 32px;
   text-align: center;
   text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
+  font-size: 25px;
+  cursor: pointer;
 
+
+  padding: 0;
+  margin: auto;
+  display: block;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#start-button:hover {
+  color: salmon;
 }
