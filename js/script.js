@@ -1,14 +1,15 @@
 window.onload = function () {
   const bg = new Background()
-  const player = new Player(150, 220, ctx, "./images/sheep_sprites4.png")
+  const player = new Player(150, 225, ctx, "./images/sheep_sprites4.png")
   const enemyWolf = new EnemyWolf(900, 310, ctx, "./images/wolf_sprites-01.png")
   const platform = new Platform(0, 400, 5000, 500)
   const flyingPlatform = new FlyingPlatform(600, 300, 65, 15)
   const flyingPlatform2 = new FlyingPlatform(700, 200, 65, 15)
-  const flyingPlatform3 = new FlyingPlatform(1300, 200, 65, 15)
+  const flyingPlatform3 = new FlyingPlatform(1300, 300, 100, 15)
   const flower = new Flower(640, 200, ctx, "./images/flowers.png")
   const flower2 = new Flower(740, 100, ctx, "./images/flowers.png")
   const water = new Water(1300, 370, 80, 150)
+  const controller = new Controller()
 
 
 
@@ -36,12 +37,112 @@ window.onload = function () {
 
   function startGame() {
     requestId = requestAnimationFrame(update)
-    //canvas.width = window.innerWidth;
-    //canvas.height = window.innerHeight;
     score = 0;
     highscore = 0;
+    playerLife = 5;
+    numberOfFlower = 0;
     requestAnimationFrame(update)
   }
+
+  function generateFlower() {
+    if (frames % 200 === 0 || frames % 150 === 0 || frames % 900 === 0) {
+
+      //(max min) + min
+      let w = Math.floor(Math.random() * canvas.height) + 80
+      let x = Math.floor(Math.random() * canvas.width) - 500
+
+      const flower = new Flower(x, y, ctx, "./images/flowers.png")
+
+      flowers.push(flower)
+    }
+  }
+
+  function moveElement(item) {
+    item.d += 0.01;
+    item.ox = item.x;
+    item.vx = item.x + Math.cos(item.d) * 2 - item.x;
+    item.x += item.vx;
+  }
+
+  function playerMove(gato) {
+    if (!player.jumping && controller.up) {
+      controller.up = false;
+      player.vy -= 10;
+      player.jumping = true;
+    }
+    if (controller.left) {
+      player.vx -= 0.05;
+    }
+    if (controller.right) {
+      player.vx += 0.05;
+    }
+    if (player.direction != "platform" && (!controller.right || !controller.left)) {
+      player.vx = 0;
+    }
+    player.vy += gravity;
+    player.oy = player.y;
+    player.ox = player.x;
+    player.y += player.vy;
+    player.x += player.vx;
+
+    if (player.y > 350) {
+      player.y = 350;
+      player.vy = 0;
+      player.jumping = false;
+    }
+    if (player.x + player.width * 0.5 > flyingPlatform3.x + 3 && player.x + player.width * 0.5 < flyingPlatform3.x + 9 + flyingPlatform3.width) {
+
+      if (player.y + player.height > flyingPlatform3.height + flyingPlatform3.y && (player.oy + player.height <= flyingPlatform3.y + flyingPlatform3.height)) {
+        player.y = (flyingPlatform3.y + 4) - player.height;
+        player.vy = flyingPlatform3.vy;
+        player.jumping = false;
+        player.vx += (flyingPlatform3.vx - player.vx);
+        player.direction = "platform"
+      }
+    }
+    if (player.jumping) {
+      if (player.direction === "platform") {
+
+        player.vx = 0;
+        if (player.status = "right") {
+          player.vx += 0.5;
+        } else {
+          player.vx -= player.x * 0.3;
+        }
+      } else {
+        player.vx -= player.x * 0.3;
+      }
+    }
+  }
+  /*
+  function countFlower() {
+    flowers.forEach((flower) => {
+      flower.draw()
+
+      if (player.collision(flower)) {
+        numberOfFlower++
+        console.log("flowerss", numberOfFlower)
+      }
+    })
+  }*/
+
+  function drawFlowerLife() {
+    ctx.fillStyle = "#000";
+    ctx.font = "20px 'Press Start 2P'"
+    ctx.fillText("flowers ", 400, 200); //TODO add image flower
+  }
+
+
+  function countLife() {
+
+  }
+
+  function drawLife() {
+    ctx.fillStyle = "#000";
+    ctx.font = "20px 'Press Start 2P'"
+    ctx.fillText("Life " + playerLife, 150, 200);
+  }
+
 
   function countScore() {
     if (frames > 200) {
@@ -54,98 +155,25 @@ window.onload = function () {
     ctx.font = "20px 'Press Start 2P'"
     ctx.fillText("Score: " + score, 150, 100);
   }
-  /*
-    let img = ["https://la-wit.github.io/build-an-infinite-runner/build/images/environments/defaultPlatform.png"];
-    const tileSize = 32;
-    const platform = new Image();
-    platform.src = img[0];*/
-  /*
-    function renderMap(m) {
-      for (let i = 0; i < m.length; i++) {
-        for (let j = 0; j < m[i].length; j++) {
-          let tile = {
-            x: tileSize * [j],
-            y: tileSize * [i],
-            width: tileSize,
-            height: tileSize,
-          };
-          let currentTile = m[i][j];
-          if (currentTile === undefined) {
-
-            // ctx.fillStyle = 'blue';
-            // ctx.fillRect(tile.x, tile.y, tile.width, tile.height);
-          }
-          if (currentTile === 1) {
-
-            //titleCollision(item)
-            ctx.drawImage(platform, tile.x, tile.y, tile.width, tile.height);
-
-          }
-        }
-      }
-    }*/
-
-  /*
-    function loadImage(url) {
-      return new Promise(resolve => {
-        const image = new Image();
-        image.addEventListener('load', () => {
-          resolve(image);
-        })
-        image.src = url;
-      })
-    }
-
-    loadImage('./images/tiles.png')
-      .then(image => {
-        const sprites = new SpriteSheet(image);
-        sprites.define('ground', 0, 0);
-        //sprites.define('sky', 3, 23);
-        sprites.define('water', 10, 2)
-        sprites.define('platform', 10, 2)
-
-
-        for (let x = 0; x < 300; x++) {
-          for (let y = 0; y < 40; y++) {
-            sprites.drawTile('sky', ctx, x, y);
-          }
-        }
-
-        for (let x = 0; x < 300; x++) {
-          for (let y = 30; y < 40; y++) {
-            sprites.drawTile('ground', ctx, x, y);
-          }
-        }
-
-        for (let x = 50; x < 55; x++) {
-          for (let y = 30; y < 40; y++) {
-            sprites.drawTile('water', ctx, x, y);
-          }
-        }
-      });*/
-
 
   function gameOver() {
-    bg.gameOver()
-    requestId = undefined
-  }
-
-  function generateWolf() {
-    if (frames % 100 == 0) {
-      let y = Math.floor(Math.random() * (400 - 10) + 10)
-      let w = Math.floor(Math.random() * (80 - 30) + 30)
-      const enemyWolf = new EnemyWolf(520, y, ctx, "./images/wolf_sprites-01.png")
-      enemyWolves.push(enemyWolf)
-      //enemies = [...enemies, enemy ]
+    if (countLife === 0) {
+      bg.gameOver()
+      requestId = undefined
     }
   }
 
   function drawWolf() {
     enemyWolves.forEach((enemyWolf, index_enemyWolf) => {
-      //enemyWolf.render() //TODO  move right left
+      enemyWolf.render() //TODO  move right left
       if (player.collision(enemyWolf)) {
-        player.life--;
-        console.log("vida -1")
+        playerLife--;
+        console.log("vida -1", playerLife)
+      }
+      if (enemyWolf.x + enemyWolf.width <= 0) {
+        enemyWolves.splice(index_enemyWolf, 1)
+        console.log("wolf splice", playerLife)
+
       }
     })
   }
@@ -154,32 +182,43 @@ window.onload = function () {
     frames++;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     bg.draw()
+
+    //map - platform, water
     platform.draw()
     flyingPlatform.draw()
     flyingPlatform2.draw()
-    flyingPlatform3.draw()
+    if (platform.x < -440 && platform.x > -1580) {
+      flyingPlatform3.draw()
+      moveElement(flyingPlatform3)
+    }
     water.draw()
-    generateWolf()
-    drawWolf()
 
+    drawWolf()
     enemyWolf.render()
     enemyWolf.update()
+    moveElement(enemyWolf)
 
+    //score, life, infos game
     drawScore()
     countScore()
+    drawLife()
+    // countFlower()
+    drawFlowerLife()
+    countLife()
 
-    player.render()
-    player.update()
-
+    // flowers
     flower.render()
     flower.update()
     flower2.render()
     flower2.update()
 
-    player.vy += gravity
+    //player
+    player.render()
+    player.update()
+
+    playerMove()
+
     if (player.collision(platform)) {
-      player.vy = 0;
-      player.jumping = false;
       player.direction = "down";
     }
 
@@ -196,10 +235,6 @@ window.onload = function () {
       player.y = (flyingPlatform.y + flyingPlatform.height) - (player.height + 10);
     }
 
-    /*player.vy += friction
-    player.y+= player.vy;
-    player.y ++;*/
-
     if (requestId) {
       requestId = requestAnimationFrame(update)
     }
@@ -212,59 +247,47 @@ window.onload = function () {
     //jump
     if (e.keyCode === 32) {
       player.jump()
-      if (!player.jumping) {
-        //player.jumping = true;
-        player.y -= 100;
-        player.direction = "up";
-        console.log("jump", player)
-      }
-
-    }
-    if (e.keyCode === 32 && e.keyCode === 39) {
-      player.jump()
-      if (!player.jumping) {
-        //player.jumping = true;
-        player.y -= 150;
-        player.x += 50;
-
-        player.direction = "up";
-        console.log("jump", player)
-      }
-
     }
     //right
     if (e.keyCode === 39) {
       player.right()
-      bg.x -= 7;
-      platform.x -= 20;
-      enemyWolf.x -= 20;
-      flyingPlatform.x -= 20;
-      flyingPlatform2.x -= 20;
-      flyingPlatform3.x -= 20;
-      flower.x -= 20;
-      flower2.x -= 20;
-      water.x -=20
+      if (player.direction != "flyingPlatform3") {
+        bg.x -= 7;
+        platform.x -= 20;
+        enemyWolf.x -= 20;
+        flyingPlatform.x -= 20;
+        flyingPlatform2.x -= 20;
+        flyingPlatform3.x -= 20;
+        flower.x -= 20;
+        flower2.x -= 20;
+        water.x -= 20
+      }
+
     } //left
     if (e.keyCode === 37) {
       player.left();
-      bg.x += 7;
-      platform.x += 20;
-      enemyWolf.x += 20;
-      flyingPlatform.x += 20;
-      flyingPlatform2.x += 20;
-      flyingPlatform3.x += 20;
-      flower.x += 20;
-      flower2.x += 20;
-      water.x += 20
+      if (player.direction != "flyingPlatform3") {
+        bg.x += 7;
+        platform.x += 20;
+        enemyWolf.x += 20;
+        flyingPlatform.x += 20;
+        flyingPlatform2.x += 20;
+        flyingPlatform3.x += 20;
+        flower.x += 20;
+        flower2.x += 20;
+        water.x += 20
+      }
+
     }
+    controller.keyDownUp(e);
   })
   //left
 
   addEventListener("keyup", (e) => {
     if (e.keyCode === 32) {
-      //player.direction = "down";
       falling = true;
     }
+    controller.keyDownUp(e);
   })
 
 }

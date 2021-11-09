@@ -8,8 +8,9 @@ let requestId;
 let playerLife = 5;
 let gravity = 0.3;
 let keys = [];
-
+let flowers = 0;
 let falling = false;
+
 /*
 let map = [
   [,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , ,  ,],

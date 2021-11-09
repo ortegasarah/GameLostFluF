@@ -81,8 +81,8 @@ class Sprite {
     this.image = new Image(); // Path to image sprite sheet
     this.image.src = options.image;
 
-    this.x = options.x; // Coordinates on canvas
-    this.y = options.y;
+    //this.x = options.x; // Coordinates on canvas
+    //this.y = options.y;
     this.width = options.width; // Size of sprite frame
     this.height = options.height;
     this.frames = options.frames; // Number of frames in a row
@@ -90,11 +90,15 @@ class Sprite {
     this.row = options.row; // Row of sprites
     this.ticksPerFrame = options.ticksPerFrame; // Speed of animation
     this.tickCount = options.tickCount; // How much time has passed
-    this.vy = 10 //gravity
-    this.vx = 5 //gravity
     this.jumping = false;
     this.direction = "down"
+
+    this.d = 0;
+    this.ox = this.x = options.x;
+    this.oy = this.y = options.y;
+    this.vx = this.vy = 0;
   }
+
 
   update() {
     this.tickCount += 1;
@@ -143,7 +147,7 @@ class Player extends Sprite {
       ticksPerFrame: 4,
       frames: 7
     });
-
+    this.status = "right"
 
   }
 
@@ -152,6 +156,7 @@ class Player extends Sprite {
     this.frameIndex = 0;
     this.row = 1;
     this.ticksPerFrame = 8;
+    this.status = "right"
   }
 
   left() {
@@ -159,6 +164,7 @@ class Player extends Sprite {
     this.frameIndex = 0;
     this.row = 0;
     this.ticksPerFrame = 8;
+    this.status = "left"
   }
 
 
@@ -179,9 +185,9 @@ class Player extends Sprite {
   }
 
   render() { // para que se quede en el top de la plataforma 
-    if (this.y + this.height < 400) {
+    /*if (this.y + this.height < 400) {
       this.y += this.vy
-    }
+    }*/
     ctx.drawImage(
       this.image,
       this.frameIndex * this.width, // The x-axis coordinate of the top left corner
@@ -228,18 +234,23 @@ class FlyingPlatform {
     this.width = w;
     this.height = h;
     this.image = new Image();
+    this.d = 0;
+    this.ox = this.x = x;
+    this.oy = this.y = y;
+    this.vx = this.vy = 0;
     this.image.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/environments/defaultPlatform.png";
   }
 
   draw() {
+    //if (this.x < this.x % 2)
     ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
-    ctx.drawImage(
+    /*ctx.drawImage(
       this.image,
       this.x + this.width,
       this.y,
       this.width,
       this.height
-    )
+    )*/
   }
 
   collision(item) {
@@ -306,6 +317,15 @@ class Flower extends Sprite {
     this.row = 0;
   }
 
+  collision(item) {
+    return (
+      this.x < item.x + item.width &&
+      this.x + this.width > item.x &&
+      this.y < item.y + item.height &&
+      this.y + this.height > item.y
+    )
+  }
+
 }
 
 class Water {
@@ -328,5 +348,23 @@ class Water {
       this.width,
       this.height
     )
+  }
+}
+
+class Controller {
+  keyDownUp(e) {
+    var down = e.type == "keydown" ? true : false;
+
+    switch (e.keyCode) {
+      case 37:
+        this.left = down;
+        break;
+      case 32:
+        this.up = down;
+        break;
+      case 39:
+        this.right = down;
+        break;
+    }
   }
 }
