@@ -3,37 +3,24 @@ window.onload = function () {
   const player = new Player(150, 225, ctx, "./images/sheep_sprites4.png")
   const enemyWolf = new EnemyWolf(900, 310, ctx, "./images/wolf_sprites-01.png")
   const platform = new Platform(0, 400, 5000, 500)
-  const flyingPlatform = new FlyingPlatform(600, 300, 65, 15)
-  const flyingPlatform2 = new FlyingPlatform(700, 200, 65, 15)
+  const flyingPlatform = new FlyingPlatform(600, 300, 100, 15)
+  const flyingPlatform2 = new FlyingPlatform(700, 200, 100, 15)
   const flyingPlatform3 = new FlyingPlatform(1300, 300, 100, 15)
+  const stairs = new FlyingPlatform(1370, 200, 200, 200)
   const flower = new Flower(640, 200, ctx, "./images/flowers.png")
   const flower2 = new Flower(740, 100, ctx, "./images/flowers.png")
   const water = new Water(1300, 370, 80, 150)
   const controller = new Controller()
 
-
-
-
-
-  document.getElementById("start-button").onclick = function () {
-    if (requestId) {
-      return true
-    }
-
-    function startButton() {
-      var btn = document.getElementById("start-button");
-
-      if (btn.value == "START GAME") {
-        btn.value = "PAUSE GAME";
-        btn.innerHTML = "PAUSE GAME";
-      } else {
-        btn.value = "START GAME";
-        btn.innerHTML = "START GAME";
+  /*
+    document.getElementById("start-button").onclick = function () {
+      if (requestId) {
+        return true
       }
 
-    }
-    startGame();
-  };
+      
+      startGame();
+    };*/
 
   function startGame() {
     requestId = requestAnimationFrame(update)
@@ -43,6 +30,7 @@ window.onload = function () {
     numberOfFlower = 0;
     requestAnimationFrame(update)
   }
+
 
   function generateFlower() {
     if (frames % 200 === 0 || frames % 150 === 0 || frames % 900 === 0) {
@@ -179,6 +167,7 @@ window.onload = function () {
   }
 
   function update() {
+
     frames++;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     bg.draw()
@@ -197,6 +186,7 @@ window.onload = function () {
     enemyWolf.render()
     enemyWolf.update()
     moveElement(enemyWolf)
+    stairs.draw()
 
     //score, life, infos game
     drawScore()
@@ -238,6 +228,7 @@ window.onload = function () {
     if (requestId) {
       requestId = requestAnimationFrame(update)
     }
+
   }
 
 
@@ -289,5 +280,7 @@ window.onload = function () {
     }
     controller.keyDownUp(e);
   })
+
+  startGame()
 
 }
