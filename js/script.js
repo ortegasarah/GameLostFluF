@@ -1,16 +1,21 @@
 window.onload = function () {
+  const gameBoy = new GameBoy()
   const bg = new Background()
-  const player = new Player(150, 225, ctx, "./images/sheep_sprites4.png")
-  const enemyWolf = new EnemyWolf(900, 310, ctx, "./images/wolf_sprites-01.png")
-  const platform = new Platform(0, 400, 5000, 500)
-  const flyingPlatform = new FlyingPlatform(600, 300, 100, 15)
-  const flyingPlatform2 = new FlyingPlatform(700, 200, 100, 15)
-  const flyingPlatform3 = new FlyingPlatform(1300, 300, 100, 15)
-  const stairs = new FlyingPlatform(1370, 200, 200, 200)
-  const flower = new Flower(640, 200, ctx, "./images/flowers.png")
-  const flower2 = new Flower(740, 100, ctx, "./images/flowers.png")
-  const water = new Water(1300, 370, 80, 150)
+  const trees = new Trees()
+  const player = new Player(400, 0, ctx, "./images/sheep_sprites4.png")
+  const enemyWolf = new EnemyWolf(900, 380, ctx, "./images/wolf_sprites-01.png")
+  const platform = new Platform(0, 470, 5000, 500)
+  const flyingPlatform = new FlyingPlatform(600, 350, 100, 15)
+  const flyingPlatform2 = new FlyingPlatform(700, 250, 100, 15)
+  const flyingPlatform3 = new FlyingPlatform(1370, 350, 100, 15)
+  const stairs = new FlyingPlatform(1800, 380, 100, 100)
+  const flower = new Flower(640, 250, ctx, "./images/flowers.png")
+  const flower2 = new Flower(740, 150, ctx, "./images/flowers.png")
+  const flower3 = new Flower(1850, 200, ctx, "./images/flowers.png")
+  const water = new Water(1300, 420, 80, 240)
   const controller = new Controller()
+
+  const troupeau = new Troupeau(2300, 370, 300, 140)
 
   /*
     document.getElementById("start-button").onclick = function () {
@@ -31,17 +36,11 @@ window.onload = function () {
     requestAnimationFrame(update)
   }
 
-
-  function generateFlower() {
-    if (frames % 200 === 0 || frames % 150 === 0 || frames % 900 === 0) {
-
-      //(max min) + min
-      let w = Math.floor(Math.random() * canvas.height) + 80
-      let x = Math.floor(Math.random() * canvas.width) - 500
-
-      const flower = new Flower(x, y, ctx, "./images/flowers.png")
-
-      flowers.push(flower)
+  function win() {
+    if (player.x > troupeau.x) {
+      console.log("you won")
+      bg.win();
+      requestID = undefined
     }
   }
 
@@ -73,8 +72,8 @@ window.onload = function () {
     player.y += player.vy;
     player.x += player.vx;
 
-    if (player.y > 350) {
-      player.y = 350;
+    if (player.y > 410) {
+      player.y = 410;
       player.vy = 0;
       player.jumping = false;
     }
@@ -102,22 +101,29 @@ window.onload = function () {
       }
     }
   }
-  /*
+
   function countFlower() {
-    flowers.forEach((flower) => {
+    flowers.forEach((flower, index_flower) => {
       flower.draw()
 
       if (player.collision(flower)) {
-        numberOfFlower++
+        numberOfFlower++;
+        flowers.splice(index_flower, 1)
         console.log("flowerss", numberOfFlower)
       }
+
+      if (flower.x + flower.width < 0) {
+        flowers.splice(index_flower, 1)
+        console.log("flowerss dispear")
+
+      }
     })
-  }*/
+  }
 
   function drawFlowerLife() {
     ctx.fillStyle = "#000";
     ctx.font = "20px 'Press Start 2P'"
-    ctx.fillText("flowers ", 400, 200); //TODO add image flower
+    ctx.fillText("Nber of flowers: ", 400, 200); //TODO add image flower
   }
 
 
@@ -128,21 +134,21 @@ window.onload = function () {
   function drawLife() {
     ctx.fillStyle = "#000";
     ctx.font = "20px 'Press Start 2P'"
-    ctx.fillText("Life " + playerLife, 150, 200);
+    ctx.fillText("Life " + player.life, 150, 200);
   }
 
-
-  function countScore() {
-    if (frames > 200) {
-      if (frames % 97 === 0) score++
+  /*
+    function countScore() {
+      if (frames > 200) {
+        if (frames % 97 === 0) score++
+      }
     }
-  }
 
-  function drawScore() {
-    ctx.fillStyle = "#000";
-    ctx.font = "20px 'Press Start 2P'"
-    ctx.fillText("Score: " + score, 150, 100);
-  }
+    function drawScore() {
+      ctx.fillStyle = "#000";
+      ctx.font = "20px 'Press Start 2P'"
+      ctx.fillText("Score: " + score, 150, 100);
+    }*/
 
   function gameOver() {
     if (countLife === 0) {
@@ -153,15 +159,15 @@ window.onload = function () {
 
   function drawWolf() {
     enemyWolves.forEach((enemyWolf, index_enemyWolf) => {
-      enemyWolf.render() //TODO  move right left
+      enemyWolf.render()
+      enemyWolf.update() //TODO  move right left
       if (player.collision(enemyWolf)) {
-        playerLife--;
-        console.log("vida -1", playerLife)
+        player.life--;
+        console.log("vida -1", player.life)
       }
       if (enemyWolf.x + enemyWolf.width <= 0) {
         enemyWolves.splice(index_enemyWolf, 1)
-        console.log("wolf splice", playerLife)
-
+        console.log("wolf splice", player.life)
       }
     })
   }
@@ -171,7 +177,7 @@ window.onload = function () {
     frames++;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     bg.draw()
-
+    trees.draw()
     //map - platform, water
     platform.draw()
     flyingPlatform.draw()
@@ -180,27 +186,23 @@ window.onload = function () {
       flyingPlatform3.draw()
       moveElement(flyingPlatform3)
     }
+    troupeau.draw()
     water.draw()
+    stairs.draw()
 
     drawWolf()
     enemyWolf.render()
     enemyWolf.update()
     moveElement(enemyWolf)
-    stairs.draw()
 
-    //score, life, infos game
-    drawScore()
-    countScore()
-    drawLife()
-    // countFlower()
-    drawFlowerLife()
-    countLife()
 
     // flowers
     flower.render()
     flower.update()
     flower2.render()
     flower2.update()
+    flower3.render()
+    flower3.update()
 
     //player
     player.render()
@@ -225,9 +227,29 @@ window.onload = function () {
       player.y = (flyingPlatform.y + flyingPlatform.height) - (player.height + 10);
     }
 
+    if (player.collision(stairs)) {
+      player.vy = 0;
+      player.jumping = false;
+      player.direction = "down";
+      player.y = (stairs.y + stairs.height) - (player.height + 90);
+    }
+
     if (requestId) {
       requestId = requestAnimationFrame(update)
     }
+    win()
+
+    gameBoy.draw()
+
+    //score, life, infos game
+    //drawScore()
+    //countScore()
+    drawLife()
+    // countFlower()
+    drawFlowerLife()
+    countFlower()
+    countLife()
+    gameOver()
 
   }
 
@@ -236,7 +258,7 @@ window.onload = function () {
 
   addEventListener("keydown", (e) => {
     //jump
-    if (e.keyCode === 32) {
+    if (e.keyCode === 38) {
       player.jump()
     }
     //right
@@ -244,6 +266,7 @@ window.onload = function () {
       player.right()
       if (player.direction != "flyingPlatform3") {
         bg.x -= 7;
+        trees.x -= 15
         platform.x -= 20;
         enemyWolf.x -= 20;
         flyingPlatform.x -= 20;
@@ -251,7 +274,10 @@ window.onload = function () {
         flyingPlatform3.x -= 20;
         flower.x -= 20;
         flower2.x -= 20;
+        flower3.x -= 20;
         water.x -= 20
+        stairs.x -= 20
+        troupeau.x -= 20
       }
 
     } //left
@@ -259,6 +285,7 @@ window.onload = function () {
       player.left();
       if (player.direction != "flyingPlatform3") {
         bg.x += 7;
+        trees.x += 15
         platform.x += 20;
         enemyWolf.x += 20;
         flyingPlatform.x += 20;
@@ -266,7 +293,11 @@ window.onload = function () {
         flyingPlatform3.x += 20;
         flower.x += 20;
         flower2.x += 20;
+        flower3.x += 20;
         water.x += 20
+        stairs.x += 20
+        troupeau.x += 20
+
       }
 
     }
@@ -275,7 +306,7 @@ window.onload = function () {
   //left
 
   addEventListener("keyup", (e) => {
-    if (e.keyCode === 32) {
+    if (e.keyCode === 38) {
       falling = true;
     }
     controller.keyDownUp(e);

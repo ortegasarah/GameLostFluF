@@ -4,9 +4,10 @@ class Background {
     this.x = 0;
     this.y = 0;
     this.width = 3000;
-    this.height = canvas.height;
+    this.height = 600;
     this.image = new Image();
-    this.image.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/environments/defaultBackground.png"
+   // this.image.src = "https://la-wit.github.io/build-an-infinite-runner/build/images/environments/defaultBackground.png"
+    this.image.src = "./images/bg_mountains.png"
   }
 
   draw() {
@@ -24,7 +25,7 @@ class Background {
   gameOver() {
     ctx.fillStyle = "#000";
     ctx.font = "28px 'Press Start 2P'"
-    ctx.fillText('Game Over! Try again!', 120, 550);
+    ctx.fillText('Game Over! Try again!', 650, 250);
 
     ctx.fillStyle = 'black';
     ctx.fillRect(this.x, 500, this.width, 250);
@@ -37,7 +38,46 @@ class Background {
     ctx.fillText(`${points}`, 230, 680);
     //create function score
   }
+  win() {
+    ctx.fillStyle = 'rgba(226, 207, 205, 0.541)';
+    ctx.fillRect(this.x, 0, this.width, 1300);
+
+    ctx.fillStyle = "#f9f4e8";
+    ctx.strokeStyle = "rgb(245, 99, 80)";
+    ctx.font = "28px 'Press Start 2P'"
+    ctx.fillText('Yay!', 550, 300);
+    ctx.strokeText('Yay!', 550, 300);
+
+    ctx.fillText('Fluf is back home!', 400, 400);
+    ctx.strokeText('Fluf is back home!', 400, 400);
+
+  }
 }
+
+class Trees {
+  //constructor
+  constructor(w, h) {
+    this.x = 0;
+    this.y = 300;
+    this.width = 2000;
+    this.height = 200;
+    this.image = new Image();
+    this.image.src = "./images/trees.png"
+  }
+
+  draw() {
+    ctx.drawImage(this.image, this.x - this.width, this.y, this.width, this.height)
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
+    ctx.drawImage(
+      this.image,
+      this.x + this.width,
+      this.y,
+      this.width,
+      this.height
+    )
+  }
+}
+
 /*
 class Player {
   constructor(x, y, w, h) {
@@ -145,9 +185,12 @@ class Player extends Sprite {
       row: 1,
       tickCount: 0,
       ticksPerFrame: 4,
-      frames: 7
+      frames: 7,
+
+      
     });
     this.status = "right"
+    this.life = playerLife;
 
   }
 
@@ -317,15 +360,6 @@ class Flower extends Sprite {
     this.row = 0;
   }
 
-  collision(item) {
-    return (
-      this.x < item.x + item.width &&
-      this.x + this.width > item.x &&
-      this.y < item.y + item.height &&
-      this.y + this.height > item.y
-    )
-  }
-
 }
 
 class Water {
@@ -335,7 +369,7 @@ class Water {
     this.width = w;
     this.height = h;
     this.image = new Image();
-    this.image.src = "./images/water.png"
+    this.image.src = "./images/water3.png"
   }
 
   draw() {
@@ -359,12 +393,57 @@ class Controller {
       case 37:
         this.left = down;
         break;
-      case 32:
+      case 38:
         this.up = down;
         break;
       case 39:
         this.right = down;
         break;
     }
+  }
+}
+
+class GameBoy {
+  //constructor
+  constructor(w, h) {
+    this.x = 0;
+    this.y = 0;
+    this.width = canvas.width;
+    this.height = canvas.height;
+    this.image = new Image();
+    this.image.src = "./images/gameboy-bg.png"
+  }
+
+  draw() {
+    ctx.drawImage(this.image, this.x - this.width, this.y, this.width, this.height)
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
+    ctx.drawImage(
+      this.image,
+      this.x + this.width,
+      this.y,
+      this.width,
+      this.height
+    )
+  }
+}
+
+class Troupeau {
+  constructor(x, y, w, h) {
+    this.x = x;
+    this.y = y;
+    this.width = w;
+    this.height = h;
+    this.image = new Image();
+    this.image.src = "./images/troupeau.png"
+  }
+
+  draw() {
+    ctx.drawImage(
+      this.image,
+      this.x + this.width,
+      this.y,
+      this.width,
+      this.height
+    )
   }
 }
