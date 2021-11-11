@@ -12,6 +12,7 @@ let falling = false;
 let numberOfFlower = 0;
 let flowers = [];
 
+let enemies =[];
 /*
 let map = [
   [,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , ,  ,],

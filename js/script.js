@@ -123,13 +123,10 @@ window.onload = function () {
   function drawFlowerLife() {
     ctx.fillStyle = "#000";
     ctx.font = "20px 'Press Start 2P'"
-    ctx.fillText("Nber of flowers: ", 400, 200); //TODO add image flower
+    ctx.fillText("Nber of flowers: " + numberOfFlower, 400, 200); //TODO add image flower
   }
 
 
-  function countLife() {
-
-  }
 
   function drawLife() {
     ctx.fillStyle = "#000";
@@ -138,39 +135,29 @@ window.onload = function () {
   }
 
   /*
-    function countScore() {
-      if (frames > 200) {
-        if (frames % 97 === 0) score++
+    function gameOver() {
+      if (countLife === 0) {
+        bg.gameOver()
+        requestId = undefined
       }
     }
-
-    function drawScore() {
-      ctx.fillStyle = "#000";
-      ctx.font = "20px 'Press Start 2P'"
-      ctx.fillText("Score: " + score, 150, 100);
+  /*
+    function drawWolf() {
+      enemyWolfs.forEach((enemyWolf, index_enemyWolf) => {
+        enemyWolf.render()
+        enemyWolf.update() //TODO  move right left
+        if (player.collision(enemyWolf)) {
+          player.life--;
+          console.log("vida -1", player.life)
+        }
+        if (enemyWolf.x + enemyWolf.width <= 0) {
+          enemyWolfs.splice(index_enemyWolf, 1)
+          console.log("wolf splice", player.life)
+        }
+      })
     }*/
 
-  function gameOver() {
-    if (countLife === 0) {
-      bg.gameOver()
-      requestId = undefined
-    }
-  }
 
-  function drawWolf() {
-    enemyWolves.forEach((enemyWolf, index_enemyWolf) => {
-      enemyWolf.render()
-      enemyWolf.update() //TODO  move right left
-      if (player.collision(enemyWolf)) {
-        player.life--;
-        console.log("vida -1", player.life)
-      }
-      if (enemyWolf.x + enemyWolf.width <= 0) {
-        enemyWolves.splice(index_enemyWolf, 1)
-        console.log("wolf splice", player.life)
-      }
-    })
-  }
 
   function update() {
 
@@ -190,7 +177,7 @@ window.onload = function () {
     water.draw()
     stairs.draw()
 
-    drawWolf()
+    //drawWolf()
     enemyWolf.render()
     enemyWolf.update()
     moveElement(enemyWolf)
@@ -209,6 +196,30 @@ window.onload = function () {
     player.update()
 
     playerMove()
+
+    //COLLISION ENEMY
+    if (player.collision(enemyWolf)) {
+      player.life--;
+      console.log("vida -1", player.life)
+    }
+    if (player.collision(water)) {
+      player.life--;
+      console.log("vida -1", player.life)
+    }
+
+    if (player.collision(flower, flower2, flower3)) {
+      numberOfFlower++;
+      console.log("flor +1", numberOfFlower)
+    }
+
+    if (player.collision(flower2)) {
+      numberOfFlower++;
+      console.log("flor +2", numberOfFlower)
+    }
+
+
+
+
 
     if (player.collision(platform)) {
       player.direction = "down";
@@ -248,8 +259,8 @@ window.onload = function () {
     // countFlower()
     drawFlowerLife()
     countFlower()
-    countLife()
-    gameOver()
+    //countLife()
+    // gameOver()
 
   }
 
@@ -265,39 +276,38 @@ window.onload = function () {
     if (e.keyCode === 39) {
       player.right()
       if (player.direction != "flyingPlatform3") {
-        bg.x -= 7;
-        trees.x -= 15
-        platform.x -= 20;
-        enemyWolf.x -= 20;
-        flyingPlatform.x -= 20;
-        flyingPlatform2.x -= 20;
-        flyingPlatform3.x -= 20;
-        flower.x -= 20;
-        flower2.x -= 20;
-        flower3.x -= 20;
-        water.x -= 20
-        stairs.x -= 20
-        troupeau.x -= 20
+        bg.x -= 2;
+        trees.x -= 7;
+        platform.x -= 10;
+        enemyWolf.x -= 10;
+        flyingPlatform.x -= 10;
+        flyingPlatform2.x -= 10;
+        flyingPlatform3.x -= 10;
+        flower.x -= 10;
+        flower2.x -= 10;
+        flower3.x -= 10;
+        water.x -= 10;
+        stairs.x -= 10;
+        troupeau.x -= 10;
       }
 
     } //left
     if (e.keyCode === 37) {
       player.left();
       if (player.direction != "flyingPlatform3") {
-        bg.x += 7;
-        trees.x += 15
-        platform.x += 20;
-        enemyWolf.x += 20;
-        flyingPlatform.x += 20;
-        flyingPlatform2.x += 20;
-        flyingPlatform3.x += 20;
-        flower.x += 20;
-        flower2.x += 20;
-        flower3.x += 20;
-        water.x += 20
-        stairs.x += 20
-        troupeau.x += 20
-
+        bg.x += 2;
+        trees.x += 7;
+        platform.x += 10;
+        enemyWolf.x += 10;
+        flyingPlatform.x += 10;
+        flyingPlatform2.x += 10;
+        flyingPlatform3.x += 10;
+        flower.x += 10;
+        flower2.x += 10;
+        flower3.x += 10;
+        water.x += 10;
+        stairs.x += 10;
+        troupeau.x += 10;
       }
 
     }
