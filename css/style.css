@@ -119,6 +119,7 @@ p {
 .keyboard{
   padding-top: 20px;
   width: 300px;
+  margin: 0 200px;
 }
 
 .trees {
