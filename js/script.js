@@ -1,31 +1,43 @@
+/////////////////// GRACIAS EVA, DYLAN Y KAIN ///////////////////////
+
 window.onload = function () {
   const gameBoy = new GameBoy()
   const bg = new Background()
   const trees = new Trees()
   const player = new Player(400, 0, ctx, "./images/sheep_sprites4.png")
   const enemyWolf = new EnemyWolf(900, 380, ctx, "./images/wolf_sprites-01.png")
+  const enemyWolf2 = new EnemyWolf(2240, 380, ctx, "./images/wolf_sprites-01.png")
   const platform = new Platform(0, 470, 5000, 500)
-  const flyingPlatform = new FlyingPlatform(600, 350, 100, 15)
-  const flyingPlatform2 = new FlyingPlatform(700, 250, 100, 15)
-  const flyingPlatform3 = new FlyingPlatform(1370, 350, 100, 15)
-  const stairs = new FlyingPlatform(1800, 380, 100, 100)
-  const flower = new Flower(640, 250, ctx, "./images/flowers.png")
-  const flower2 = new Flower(740, 150, ctx, "./images/flowers.png")
+  const flyingPlatform = new FlyingPlatform(600, 350, 130, 15)
+  const flyingPlatform2 = new FlyingPlatform(720, 270, 130, 15)
+  const flyingPlatform3 = new FlyingPlatform(1370, 350, 130, 15)
+  const flyingPlatform4 = new FlyingPlatform(1800, 380, 130, 100)
+  const flyingPlatform5 = new FlyingPlatform(1930, 300, 130, 180)
+  const flyingPlatform6 = new FlyingPlatform(2200, 350, 130, 15)
+  const flyingPlatform7 = new FlyingPlatform(2600, 340, 500, 140)
+  const flyingPlatform8 = new FlyingPlatform(2750, 250, 230, 15)
+  const flower = new Flower(640, 220, ctx, "./images/flowers.png")
+  const flower2 = new Flower(760, 150, ctx, "./images/flowers.png")
   const flower3 = new Flower(1850, 200, ctx, "./images/flowers.png")
-  const water = new Water(1300, 420, 80, 240)
+  const flower4 = new Flower(2850, 200, ctx, "./images/flowers.png")
+  const flower5 = new Flower(3300, 200, ctx, "./images/flowers.png")
+  const flower6 = new Flower(3400, 200, ctx, "./images/flowers.png")
+
+  getFlowers = [flower, flower2, flower3, flower4, flower5, flower6];
+  enemies = [enemyWolf, enemyWolf2];
+
+  smallPlatforms = [flyingPlatform, flyingPlatform2, flyingPlatform6, flyingPlatform8]; //player.height + 10
+  mediumPlatform = [flyingPlatform4]; //player.height + 100
+  largePlatform = [flyingPlatform7]; //player.height + 140
+  xlLPlatform = [flyingPlatform5]; //player.height + 180
+
+  const water = new Water(1380, 420, 80, 240)
+  const water2 = new Water(2800, 280, 80, 330)
   const controller = new Controller()
 
-  const troupeau = new Troupeau(2300, 370, 300, 140)
+  const troupeau = new Troupeau(3500, 370, 300, 140)
 
-  /*
-    document.getElementById("start-button").onclick = function () {
-      if (requestId) {
-        return true
-      }
 
-      
-      startGame();
-    };*/
 
   function startGame() {
     requestId = requestAnimationFrame(update)
@@ -36,11 +48,21 @@ window.onload = function () {
     requestAnimationFrame(update)
   }
 
+
+
+
   function win() {
     if (player.x > troupeau.x) {
       console.log("you won")
       bg.win();
       requestID = undefined
+    }
+  }
+
+  function gameOver() {
+    if (player.life === 0) {
+      bg.gameOver()
+      requestId = undefined
     }
   }
 
@@ -92,7 +114,7 @@ window.onload = function () {
 
         player.vx = 0;
         if (player.status = "right") {
-          player.vx += 0.5;
+          player.vx += 1;
         } else {
           player.vx -= player.x * 0.3;
         }
@@ -102,129 +124,141 @@ window.onload = function () {
     }
   }
 
-  function countFlower() {
-    flowers.forEach((flower, index_flower) => {
-      flower.draw()
-
+  function renderFlowers() {
+    getFlowers.forEach((flower, index_flower) => {
+      flower.render()
+      flower.update()
       if (player.collision(flower)) {
         numberOfFlower++;
-        flowers.splice(index_flower, 1)
-        console.log("flowerss", numberOfFlower)
-      }
-
-      if (flower.x + flower.width < 0) {
-        flowers.splice(index_flower, 1)
-        console.log("flowerss dispear")
-
+        getFlowers.splice(index_flower, 1)
       }
     })
   }
 
   function drawFlowerLife() {
     ctx.fillStyle = "#000";
-    ctx.font = "20px 'Press Start 2P'"
-    ctx.fillText("Nber of flowers: " + numberOfFlower, 400, 200); //TODO add image flower
+    ctx.font = "20px 'Press Start 2P'";
+    ctx.fillText("flowers " + numberOfFlower, 400, 200); //TODO add image flower
   }
-
-
 
   function drawLife() {
     ctx.fillStyle = "#000";
     ctx.font = "20px 'Press Start 2P'"
-    ctx.fillText("Life " + player.life, 150, 200);
+    ctx.fillText("life " + player.life, 700, 200);
   }
 
-  /*
-    function gameOver() {
-      if (countLife === 0) {
-        bg.gameOver()
-        requestId = undefined
-      }
-    }
-  /*
-    function drawWolf() {
-      enemyWolfs.forEach((enemyWolf, index_enemyWolf) => {
-        enemyWolf.render()
-        enemyWolf.update() //TODO  move right left
-        if (player.collision(enemyWolf)) {
+  function drawWolf() {
+    enemies.forEach((enemy, index_enemy) => {
+      enemy.render()
+      enemy.update()
+      moveElement(enemy)
+      if (player.collision(enemy)) {
+        if (!player.isHit) {
+          damage()
           player.life--;
-          console.log("vida -1", player.life)
         }
-        if (enemyWolf.x + enemyWolf.width <= 0) {
-          enemyWolfs.splice(index_enemyWolf, 1)
-          console.log("wolf splice", player.life)
-        }
-      })
-    }*/
+      }
+    })
+  }
 
+  function renderSmallPlatforms() {
+    smallPlatforms.forEach((smallPlatform, index_smallPlatform) => {
+      smallPlatform.draw()
+      if (player.collision(smallPlatform)) {
+        player.vy = 0;
+        player.jumping = false;
+        player.direction = "down";
+        player.y = (smallPlatform.y + smallPlatform.height) - (player.height + 10);
+      }
+    })
+  }
 
+  function renderMediumPlatforms() {
+    mediumPlatform.forEach((mediumPlatform, index_mediumPlatform) => {
+      mediumPlatform.draw()
+      if (player.collision(mediumPlatform)) {
+        player.vy = 0;
+        player.jumping = false;
+        player.direction = "down";
+        player.y = (mediumPlatform.y + mediumPlatform.height) - (player.height + 100);
+      }
+    })
+  }
+
+  function renderLargePlatforms() {
+    largePlatform.forEach((largePlatform, index_largePlatform) => {
+      largePlatform.draw()
+      if (player.collision(largePlatform)) {
+        player.vy = 0;
+        player.jumping = false;
+        player.direction = "down";
+        player.y = (largePlatform.y + largePlatform.height) - (player.height + 140);
+      }
+    })
+  }
+
+  function renderXLPlatforms() {
+    xlLPlatform.forEach((xlLPlatform, index_xlLPlatform) => {
+      xlLPlatform.draw()
+      if (player.collision(xlLPlatform)) {
+        player.vy = 0;
+        player.jumping = false;
+        player.direction = "down";
+        player.y = (xlLPlatform.y + xlLPlatform.height) - (player.height + 180);
+      }
+    })
+  }
+
+  function damage() {
+    player.isHit = true;
+    setTimeout(() => {
+      player.isHit = false;
+    }, 3500)
+  }
 
   function update() {
-
     frames++;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     bg.draw()
     trees.draw()
     //map - platform, water
     platform.draw()
-    flyingPlatform.draw()
-    flyingPlatform2.draw()
     if (platform.x < -440 && platform.x > -1580) {
       flyingPlatform3.draw()
       moveElement(flyingPlatform3)
     }
     troupeau.draw()
-    water.draw()
-    stairs.draw()
 
-    //drawWolf()
-    enemyWolf.render()
-    enemyWolf.update()
-    moveElement(enemyWolf)
-
-
+    drawWolf()
     // flowers
-    flower.render()
-    flower.update()
-    flower2.render()
-    flower2.update()
-    flower3.render()
-    flower3.update()
-
+    renderFlowers()
+    renderSmallPlatforms()
+    renderMediumPlatforms()
+    renderLargePlatforms()
+    renderXLPlatforms()
     //player
     player.render()
     player.update()
 
     playerMove()
 
+    water.draw()
+    water2.draw()
+
     //COLLISION ENEMY
-    if (player.collision(enemyWolf)) {
-      player.life--;
-      console.log("vida -1", player.life)
-    }
     if (player.collision(water)) {
-      player.life--;
-      console.log("vida -1", player.life)
+      if (!player.isHit) {
+        damage()
+        player.life--;
+      }
     }
-
-    if (player.collision(flower, flower2, flower3)) {
-      numberOfFlower++;
-      console.log("flor +1", numberOfFlower)
-    }
-
-    if (player.collision(flower2)) {
-      numberOfFlower++;
-      console.log("flor +2", numberOfFlower)
-    }
-
-
 
 
 
     if (player.collision(platform)) {
       player.direction = "down";
     }
-
+    /*
     if (player.collision(flyingPlatform2)) {
       player.vy = 0;
       player.jumping = false;
@@ -237,31 +271,49 @@ window.onload = function () {
       player.direction = "down";
       player.y = (flyingPlatform.y + flyingPlatform.height) - (player.height + 10);
     }
-
-    if (player.collision(stairs)) {
+    if (player.collision(flyingPlatform4)) {
       player.vy = 0;
       player.jumping = false;
       player.direction = "down";
-      player.y = (stairs.y + stairs.height) - (player.height + 90);
+      player.y = (flyingPlatform4.y + flyingPlatform4.height) - (player.height + 100);
     }
+    if (player.collision(flyingPlatform5)) {
+      player.vy = 0;
+      player.jumping = false;
+      player.direction = "down";
+      player.y = (flyingPlatform5.y + flyingPlatform5.height) - (player.height + 180);
+    }
+    if (player.collision(flyingPlatform6)) {
+      player.vy = 0;
+      player.jumping = false;
+      player.direction = "down";
+      player.y = (flyingPlatform6.y + flyingPlatform6.height) - (player.height + 10);
+    }
+    if (player.collision(flyingPlatform7)) {
+      player.vy = 0;
+      player.jumping = false;
+      player.direction = "down";
+      player.y = (flyingPlatform7.y + flyingPlatform7.height) - (player.height + 140);
+    }
+
+    if (player.collision(flyingPlatform8)) {
+      player.vy = 0;
+      player.jumping = false;
+      player.direction = "down";
+      player.y = (flyingPlatform8.y + flyingPlatform8.height) - (player.height + 140);
+    }
+*/
+
+
 
     if (requestId) {
       requestId = requestAnimationFrame(update)
     }
     win()
-
+    gameOver()
     gameBoy.draw()
-
-    //score, life, infos game
-    //drawScore()
-    //countScore()
     drawLife()
-    // countFlower()
     drawFlowerLife()
-    countFlower()
-    //countLife()
-    // gameOver()
-
   }
 
 
@@ -280,14 +332,20 @@ window.onload = function () {
         trees.x -= 7;
         platform.x -= 10;
         enemyWolf.x -= 10;
+        enemyWolf2.x -= 10
         flyingPlatform.x -= 10;
         flyingPlatform2.x -= 10;
         flyingPlatform3.x -= 10;
+        flyingPlatform4.x -= 10;
+        flyingPlatform5.x -= 10;
+        flyingPlatform6.x -= 10;
+        flyingPlatform7.x -= 10;
+        flyingPlatform8.x -= 10
         flower.x -= 10;
         flower2.x -= 10;
         flower3.x -= 10;
         water.x -= 10;
-        stairs.x -= 10;
+        water2.x -= 10;
         troupeau.x -= 10;
       }
 
@@ -298,15 +356,22 @@ window.onload = function () {
         bg.x += 2;
         trees.x += 7;
         platform.x += 10;
+        enemyWolf2.x += 10
         enemyWolf.x += 10;
+
         flyingPlatform.x += 10;
         flyingPlatform2.x += 10;
         flyingPlatform3.x += 10;
+        flyingPlatform4.x += 10
+        flyingPlatform5.x += 10
+        flyingPlatform6.x += 10
+        flyingPlatform7.x += 10
+        flyingPlatform8.x += 10
         flower.x += 10;
         flower2.x += 10;
         flower3.x += 10;
         water.x += 10;
-        stairs.x += 10;
+        water2.x += 10;
         troupeau.x += 10;
       }
 

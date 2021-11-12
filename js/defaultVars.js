@@ -1,7 +1,7 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 //let buffer = document.createElement("canvas").getContext("2d");
-let enemyWolves =[]
+
 let frames = 0;
 let points = 0;
 let requestId;
@@ -11,8 +11,8 @@ let keys = [];
 let falling = false;
 let numberOfFlower = 0;
 let flowers = [];
-
 let enemies =[];
+let flyingPlatforms = []
 /*
 let map = [
   [,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , ,  ,],
