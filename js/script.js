@@ -15,33 +15,31 @@ window.onload = function () {
   const flyingPlatform5 = new FlyingPlatform(1930, 300, 130, 180)
   const flyingPlatform6 = new FlyingPlatform(2200, 350, 130, 15)
   const flyingPlatform7 = new FlyingPlatform(2600, 340, 500, 140)
-  const flyingPlatform8 = new FlyingPlatform(2750, 250, 230, 15)
-  const flower = new Flower(640, 220, ctx, "./images/flowers.png")
-  const flower2 = new Flower(760, 150, ctx, "./images/flowers.png")
-  const flower3 = new Flower(1850, 200, ctx, "./images/flowers.png")
-  const flower4 = new Flower(2850, 200, ctx, "./images/flowers.png")
-  const flower5 = new Flower(3300, 200, ctx, "./images/flowers.png")
-  const flower6 = new Flower(3400, 200, ctx, "./images/flowers.png")
-
-  getFlowers = [flower, flower2, flower3, flower4, flower5, flower6];
-  enemies = [enemyWolf, enemyWolf2];
-
+  const flyingPlatform8 = new FlyingPlatform(2750, 220, 250, 15)
   smallPlatforms = [flyingPlatform, flyingPlatform2, flyingPlatform6, flyingPlatform8]; //player.height + 10
   mediumPlatform = [flyingPlatform4]; //player.height + 100
   largePlatform = [flyingPlatform7]; //player.height + 140
   xlLPlatform = [flyingPlatform5]; //player.height + 180
-
+  const flower = new Flower(640, 220, ctx, "./images/flowers.png")
+  const flower2 = new Flower(760, 150, ctx, "./images/flowers.png")
+  const flower3 = new Flower(1850, 200, ctx, "./images/flowers.png")
+  const flower4 = new Flower(2850, 150, ctx, "./images/flowers.png")
+  const flower5 = new Flower(3300, 410, ctx, "./images/flowers.png")
+  const flower6 = new Flower(3350, 410, ctx, "./images/flowers.png")
+  const flower7 = new Flower(3400, 410, ctx, "./images/flowers.png")
+  const flower8 = new Flower(3440, 410, ctx, "./images/flowers.png")
+  getFlowers = [flower, flower2, flower3, flower4, flower5, flower6, flower7, flower8];
+  enemies = [enemyWolf, enemyWolf2];
   const water = new Water(1380, 420, 80, 240)
   const water2 = new Water(2800, 280, 80, 330)
   const controller = new Controller()
-
   const troupeau = new Troupeau(3500, 370, 300, 140)
 
 
 
   function startGame() {
     requestId = requestAnimationFrame(update)
-    score = 0;
+    time = 50;
     highscore = 0;
     playerLife = 5;
     numberOfFlower = 0;
@@ -49,16 +47,15 @@ window.onload = function () {
   }
 
 
-
-
+  //WIN
   function win() {
-    if (player.x > troupeau.x) {
-      console.log("you won")
+    if (player.life > 0 && player.x > troupeau.x) {
       bg.win();
-      requestID = undefined
+      requestID = undefined;
     }
   }
 
+  //GAME OVER
   function gameOver() {
     if (player.life === 0) {
       bg.gameOver()
@@ -124,6 +121,7 @@ window.onload = function () {
     }
   }
 
+  //FLOWERS, LIFE, TIME
   function renderFlowers() {
     getFlowers.forEach((flower, index_flower) => {
       flower.render()
@@ -136,15 +134,15 @@ window.onload = function () {
   }
 
   function drawFlowerLife() {
-    ctx.fillStyle = "#000";
-    ctx.font = "20px 'Press Start 2P'";
-    ctx.fillText("flowers " + numberOfFlower, 400, 200); //TODO add image flower
+    ctx.fillStyle = "#fff";
+    ctx.font = "15px 'Press Start 2P'";
+    ctx.fillText("flowers " + numberOfFlower, 400, 510); //TODO add image flower
   }
 
   function drawLife() {
-    ctx.fillStyle = "#000";
-    ctx.font = "20px 'Press Start 2P'"
-    ctx.fillText("life " + player.life, 700, 200);
+    ctx.fillStyle = "#fff";
+    ctx.font = "15px 'Press Start 2P'"
+    ctx.fillText("life " + player.life, 400, 540);
   }
 
   function drawWolf() {
@@ -161,6 +159,29 @@ window.onload = function () {
     })
   }
 
+  function countDown() {
+    if (frames % 120 === 0) {
+      time--;
+    }
+    if (time > 1 && player.life >= 0 && player.x > troupeau.x) {
+      bg.win();
+      requestID = undefined
+
+    }
+    if (time < 1) {
+      bg.gameOver()
+      requestId = undefined
+    }
+  }
+
+
+  function drawTime() {
+    ctx.fillStyle = "#fff";
+    ctx.font = "15px 'Press Start 2P'"
+    ctx.fillText("time left " + time, 400, 570);
+  }
+
+  // RENDER ALL PLATFORMS
   function renderSmallPlatforms() {
     smallPlatforms.forEach((smallPlatform, index_smallPlatform) => {
       smallPlatform.draw()
@@ -221,102 +242,61 @@ window.onload = function () {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     bg.draw()
     trees.draw()
-    //map - platform, water
     platform.draw()
+    troupeau.draw()
+
+    //PLATFORMS
     if (platform.x < -440 && platform.x > -1580) {
       flyingPlatform3.draw()
       moveElement(flyingPlatform3)
     }
-    troupeau.draw()
+    if (player.collision(platform)) {
+      player.direction = "down";
+    }
 
-    drawWolf()
-    // flowers
+
+    // RENDER FLOWERS & PLATFORMS
     renderFlowers()
     renderSmallPlatforms()
     renderMediumPlatforms()
     renderLargePlatforms()
     renderXLPlatforms()
-    //player
+
+    //PLAYER
     player.render()
     player.update()
-
     playerMove()
 
+
+    //ENEMYs COLLISION
+    drawWolf()
     water.draw()
     water2.draw()
-
-    //COLLISION ENEMY
     if (player.collision(water)) {
       if (!player.isHit) {
         damage()
         player.life--;
       }
     }
-
-
-
-    if (player.collision(platform)) {
-      player.direction = "down";
+    if (player.collision(water2)) {
+      if (!player.isHit) {
+        damage()
+        player.life--;
+      }
     }
-    /*
-    if (player.collision(flyingPlatform2)) {
-      player.vy = 0;
-      player.jumping = false;
-      player.direction = "down";
-      player.y = (flyingPlatform2.y + flyingPlatform2.height) - (player.height + 10);
-    }
-    if (player.collision(flyingPlatform)) {
-      player.vy = 0;
-      player.jumping = false;
-      player.direction = "down";
-      player.y = (flyingPlatform.y + flyingPlatform.height) - (player.height + 10);
-    }
-    if (player.collision(flyingPlatform4)) {
-      player.vy = 0;
-      player.jumping = false;
-      player.direction = "down";
-      player.y = (flyingPlatform4.y + flyingPlatform4.height) - (player.height + 100);
-    }
-    if (player.collision(flyingPlatform5)) {
-      player.vy = 0;
-      player.jumping = false;
-      player.direction = "down";
-      player.y = (flyingPlatform5.y + flyingPlatform5.height) - (player.height + 180);
-    }
-    if (player.collision(flyingPlatform6)) {
-      player.vy = 0;
-      player.jumping = false;
-      player.direction = "down";
-      player.y = (flyingPlatform6.y + flyingPlatform6.height) - (player.height + 10);
-    }
-    if (player.collision(flyingPlatform7)) {
-      player.vy = 0;
-      player.jumping = false;
-      player.direction = "down";
-      player.y = (flyingPlatform7.y + flyingPlatform7.height) - (player.height + 140);
-    }
-
-    if (player.collision(flyingPlatform8)) {
-      player.vy = 0;
-      player.jumping = false;
-      player.direction = "down";
-      player.y = (flyingPlatform8.y + flyingPlatform8.height) - (player.height + 140);
-    }
-*/
-
-
 
     if (requestId) {
       requestId = requestAnimationFrame(update)
     }
+    countDown()
+    drawTime()
+    drawLife()
+    drawFlowerLife()
     win()
     gameOver()
     gameBoy.draw()
-    drawLife()
-    drawFlowerLife()
+
   }
-
-
 
 
   addEventListener("keydown", (e) => {
@@ -344,6 +324,11 @@ window.onload = function () {
         flower.x -= 10;
         flower2.x -= 10;
         flower3.x -= 10;
+        flower4.x -= 10;
+        flower5.x -= 10;
+        flower6.x -= 10;
+        flower7.x -= 10;
+        flower8.x -= 10;
         water.x -= 10;
         water2.x -= 10;
         troupeau.x -= 10;
@@ -358,7 +343,6 @@ window.onload = function () {
         platform.x += 10;
         enemyWolf2.x += 10
         enemyWolf.x += 10;
-
         flyingPlatform.x += 10;
         flyingPlatform2.x += 10;
         flyingPlatform3.x += 10;
@@ -370,6 +354,11 @@ window.onload = function () {
         flower.x += 10;
         flower2.x += 10;
         flower3.x += 10;
+        flower4.x += 10;
+        flower5.x += 10;
+        flower6.x += 10;
+        flower7.x += 10;
+        flower8.x += 10;
         water.x += 10;
         water2.x += 10;
         troupeau.x += 10;
@@ -379,7 +368,6 @@ window.onload = function () {
     controller.keyDownUp(e);
   })
   //left
-
   addEventListener("keyup", (e) => {
     if (e.keyCode === 38) {
       falling = true;
