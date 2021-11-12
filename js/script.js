@@ -4,9 +4,9 @@ window.onload = function () {
   const gameBoy = new GameBoy()
   const bg = new Background()
   const trees = new Trees()
-  const player = new Player(400, 0, ctx, "./images/sheep_sprites4.png")
-  const enemyWolf = new EnemyWolf(900, 380, ctx, "./images/wolf_sprites-01.png")
-  const enemyWolf2 = new EnemyWolf(2240, 380, ctx, "./images/wolf_sprites-01.png")
+  const player = new Player(400, 0, ctx, "./images/sheep_sprites.png")
+  const enemyWolf = new EnemyWolf(900, 380, ctx, "./images/wolf_sprites.png")
+  const enemyWolf2 = new EnemyWolf(2240, 380, ctx, "./images/wolf_sprites.png")
   const platform = new Platform(0, 470, 5000, 500)
   const flyingPlatform = new FlyingPlatform(600, 350, 130, 15)
   const flyingPlatform2 = new FlyingPlatform(720, 270, 130, 15)
@@ -15,25 +15,25 @@ window.onload = function () {
   const flyingPlatform5 = new FlyingPlatform(1930, 300, 130, 180)
   const flyingPlatform6 = new FlyingPlatform(2200, 350, 130, 15)
   const flyingPlatform7 = new FlyingPlatform(2600, 340, 500, 140)
-  const flyingPlatform8 = new FlyingPlatform(2750, 220, 250, 15)
+  const flyingPlatform8 = new FlyingPlatform(2700, 220, 260, 15)
   smallPlatforms = [flyingPlatform, flyingPlatform2, flyingPlatform6, flyingPlatform8]; //player.height + 10
   mediumPlatform = [flyingPlatform4]; //player.height + 100
   largePlatform = [flyingPlatform7]; //player.height + 140
   xlLPlatform = [flyingPlatform5]; //player.height + 180
-  const flower = new Flower(640, 220, ctx, "./images/flowers.png")
-  const flower2 = new Flower(760, 150, ctx, "./images/flowers.png")
-  const flower3 = new Flower(1850, 200, ctx, "./images/flowers.png")
-  const flower4 = new Flower(2850, 150, ctx, "./images/flowers.png")
-  const flower5 = new Flower(3300, 410, ctx, "./images/flowers.png")
-  const flower6 = new Flower(3350, 410, ctx, "./images/flowers.png")
-  const flower7 = new Flower(3400, 410, ctx, "./images/flowers.png")
-  const flower8 = new Flower(3440, 410, ctx, "./images/flowers.png")
+  const flower = new Flower(640, 220, ctx, "./images/flower_sprites.png")
+  const flower2 = new Flower(760, 150, ctx, "./images/flower_sprites.png")
+  const flower3 = new Flower(1850, 200, ctx, "./images/flower_sprites.png")
+  const flower4 = new Flower(2830, 130, ctx, "./images/flower_sprites.png")
+  const flower5 = new Flower(3140, 410, ctx, "./images/flower_sprites.png")
+  const flower6 = new Flower(3210, 410, ctx, "./images/flower_sprites.png")
+  const flower7 = new Flower(3280, 410, ctx, "./images/flower_sprites.png")
+  const flower8 = new Flower(3350, 410, ctx, "./images/flower_sprites.png")
   getFlowers = [flower, flower2, flower3, flower4, flower5, flower6, flower7, flower8];
   enemies = [enemyWolf, enemyWolf2];
   const water = new Water(1380, 420, 80, 240)
   const water2 = new Water(2800, 280, 80, 330)
   const controller = new Controller()
-  const troupeau = new Troupeau(3500, 370, 300, 140)
+  const flock = new Flock(3400, 360, 300, 140)
 
 
 
@@ -47,9 +47,30 @@ window.onload = function () {
   }
 
 
+  function countDown() {
+    if (frames % 120 === 0) {
+      time--;
+    }
+    if (time > 1 && player.life >= 0 && player.x > flock.x) {
+      bg.win();
+      requestID = undefined
+    }
+    if (time < 1) {
+      bg.gameOver()
+      requestId = undefined
+    }
+  }
+
+
+  function drawTime() {
+    ctx.fillStyle = "#fff";
+    ctx.font = "15px 'Press Start 2P'"
+    ctx.fillText("time left " + time, 400, 570);
+  }
+
   //WIN
   function win() {
-    if (player.life > 0 && player.x > troupeau.x) {
+    if (player.life > 0 && player.x > flock.x) {
       bg.win();
       requestID = undefined;
     }
@@ -60,6 +81,7 @@ window.onload = function () {
     if (player.life === 0) {
       bg.gameOver()
       requestId = undefined
+      clearInterval(time)
     }
   }
 
@@ -152,34 +174,14 @@ window.onload = function () {
       moveElement(enemy)
       if (player.collision(enemy)) {
         if (!player.isHit) {
-          damage()
+          player.jump()
+;          damage();
           player.life--;
         }
       }
     })
   }
 
-  function countDown() {
-    if (frames % 120 === 0) {
-      time--;
-    }
-    if (time > 1 && player.life >= 0 && player.x > troupeau.x) {
-      bg.win();
-      requestID = undefined
-
-    }
-    if (time < 1) {
-      bg.gameOver()
-      requestId = undefined
-    }
-  }
-
-
-  function drawTime() {
-    ctx.fillStyle = "#fff";
-    ctx.font = "15px 'Press Start 2P'"
-    ctx.fillText("time left " + time, 400, 570);
-  }
 
   // RENDER ALL PLATFORMS
   function renderSmallPlatforms() {
@@ -231,6 +233,7 @@ window.onload = function () {
   }
 
   function damage() {
+    player.jump()
     player.isHit = true;
     setTimeout(() => {
       player.isHit = false;
@@ -243,7 +246,7 @@ window.onload = function () {
     bg.draw()
     trees.draw()
     platform.draw()
-    troupeau.draw()
+    flock.draw()
 
     //PLATFORMS
     if (platform.x < -440 && platform.x > -1580) {
@@ -261,11 +264,6 @@ window.onload = function () {
     renderMediumPlatforms()
     renderLargePlatforms()
     renderXLPlatforms()
-
-    //PLAYER
-    player.render()
-    player.update()
-    playerMove()
 
 
     //ENEMYs COLLISION
@@ -288,6 +286,11 @@ window.onload = function () {
     if (requestId) {
       requestId = requestAnimationFrame(update)
     }
+    //PLAYER
+    player.render()
+    player.update()
+    playerMove()
+
     countDown()
     drawTime()
     drawLife()
@@ -331,7 +334,7 @@ window.onload = function () {
         flower8.x -= 10;
         water.x -= 10;
         water2.x -= 10;
-        troupeau.x -= 10;
+        flock.x -= 10;
       }
 
     } //left
@@ -361,7 +364,7 @@ window.onload = function () {
         flower8.x += 10;
         water.x += 10;
         water2.x += 10;
-        troupeau.x += 10;
+        flock.x += 10;
       }
 
     }

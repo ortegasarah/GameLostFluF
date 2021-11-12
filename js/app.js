@@ -175,10 +175,11 @@ class Player extends Sprite {
 
 
   jump() {
-    this.frames = 7;
+    this.frames = 5;
     this.frameIndex = 0;
-    this.row = 1;
+    this.row = 2;
     this.ticksPerFrame = 8;
+    this.status = "hit"
   }
 
   collision(item) {
@@ -297,8 +298,8 @@ class Flower extends Sprite {
       image: image,
       x: x,
       y: y,
-      width: 53,
-      height: 53,
+      width: 63,
+      height: 63,
       frameIndex: 0,
       row: 0,
       tickCount: 0,
@@ -321,7 +322,7 @@ class Water {
     this.width = w;
     this.height = h;
     this.image = new Image();
-    this.image.src = "./images/water3.png"
+    this.image.src = "./images/water.png"
   }
 
   draw() {
@@ -379,14 +380,14 @@ class GameBoy {
   }
 }
 
-class Troupeau {
+class Flock {
   constructor(x, y, w, h) {
     this.x = x;
     this.y = y;
     this.width = w;
     this.height = h;
     this.image = new Image();
-    this.image.src = "./images/troupeau.png"
+    this.image.src = "./images/flock.png"
   }
 
   draw() {
